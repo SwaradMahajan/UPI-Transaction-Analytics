@@ -2,6 +2,7 @@
 
 :root {
   --font-size: 16px;
+  color-scheme: dark;
 
   /* UPI Analytics — dark navy fintech ground */
   --background: #0a0b14;
@@ -58,40 +59,25 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  --background: #0a0b14;
+  --foreground: #f4f4f8;
+  --card: #12131f;
+  --card-foreground: #f4f4f8;
+  --popover: #12131f;
+  --popover-foreground: #f4f4f8;
+  --primary: #a855f7;
+  --primary-foreground: #ffffff;
+  --secondary: #1a1c2b;
+  --secondary-foreground: #f4f4f8;
+  --muted: #171a29;
+  --muted-foreground: #8b8ea3;
+  --accent: #7c3aed;
+  --accent-foreground: #ffffff;
+  --destructive: #f0476a;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: #a855f7;
 }
 
 @theme inline {
@@ -146,21 +132,24 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
+  html,
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
+    color-scheme: dark;
+    background-color: #0a0b14;
+    color: #f4f4f8;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   h1, h2, h3, h4 {
     font-family: var(--font-display);
   }
-
-  /**
-  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
-  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
-  */
 
   html {
     font-size: var(--font-size);
@@ -206,5 +195,93 @@
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
+  }
+}
+
+/* Explicit Dark Mode Print & PDF Export Styles */
+@media print {
+  @page {
+    margin: 12mm;
+    background-color: #0a0b14;
+  }
+
+  :root {
+    color-scheme: dark !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html,
+  body {
+    background-color: #0a0b14 !important;
+    color: #f4f4f8 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Keep header minimal for print */
+  header {
+    position: static !important;
+    background-color: #0a0b14 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+    padding-bottom: 8px !important;
+  }
+
+  header nav,
+  header button,
+  header .ml-auto {
+    display: none !important;
+  }
+
+  /* Prevent page breaks inside cards */
+  section,
+  .rounded-2xl,
+  .rounded-xl,
+  table {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Force dark backgrounds for cards and elements */
+  .bg-card,
+  [class*="bg-card"] {
+    background-color: #12131f !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+  }
+
+  .bg-card-elevated {
+    background-color: #171a29 !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+  }
+
+  /* Text colors */
+  .text-foreground,
+  h1, h2, h3, h4, strong {
+    color: #f4f4f8 !important;
+  }
+
+  .text-muted-foreground {
+    color: #8b8ea3 !important;
+  }
+
+  /* Gradient buttons and accent colors */
+  .bg-primary {
+    background-color: #a855f7 !important;
+    color: #ffffff !important;
+  }
+
+  .bg-magenta {
+    background-color: #ec4899 !important;
+  }
+
+  .bg-danger {
+    background-color: #f0476a !important;
+  }
+
+  .bg-success {
+    background-color: #22c99a !important;
   }
 }
