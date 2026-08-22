@@ -1,29 +1,42 @@
-# Slice UPI-CC Churn Analysis + PRD
+# Slice UPI-CC Churn Analysis + PRD & Interactive Dashboard
 
-**Small merchants reject UPI-linked credit card payments to avoid MDR fees — and 63% of affected users abandon the app within 5 minutes.** This project uses MySQL, Python, and SQL window functions to quantify the churn impact of `MERCHANT_CC_REJECTED` failures, and delivers a Product Requirements Document for a Smart Fallback UI that can cut that churn rate in half.
+**Small merchants reject UPI-linked credit card payments to avoid MDR fees — and 63% of affected users abandon the app within 5 minutes.** This project uses MySQL, Python, and SQL window functions to quantify the churn impact of `MERCHANT_CC_REJECTED` failures, delivers a Product Requirements Document (PRD) for a Smart Fallback UI that cuts churn to ≤30%, and includes an interactive React analytics dashboard.
 
-Built with: MySQL 8.0 · Python 3 · Faker · Raw SQL (aggregation + window functions)
+Built with: MySQL 8.0 · Python 3 · Faker · Raw SQL (aggregation + window functions) · React 18 · Vite · TailwindCSS · Recharts · Radix UI / shadcn
 
 ---
 
 ## Quick Start
 
+### 1. Database & SQL Analytics Pipeline
 ```bash
 # 1. Create database & tables
 mysql -u root -p < schema/schema.sql
 
-# 2. Install dependencies
+# 2. Install Python dependencies
 pip install faker pymysql
 
 # 3. Generate 10,000 synthetic transactions
 python data_generation/generate_transactions.py
 
-# 4. Run analysis
+# 4. Run SQL analysis
 mysql -u root -p slice_upi_analytics < analysis/01_base_funnel_analysis.sql
 mysql -u root -p slice_upi_analytics < analysis/02_next_action_churn.sql
 ```
 
-> **Note:** Update MySQL credentials in `generate_transactions.py` before running.
+### 2. Interactive Analytics Dashboard (React + Vite)
+```bash
+# Navigate to dashboard directory
+cd dashboard
+
+# Install dependencies
+npm install
+
+# Start local development server
+npm run dev
+```
+
+> **Note:** Update MySQL credentials in `generate_transactions.py` before running the data generator.
 
 ---
 
@@ -31,17 +44,35 @@ mysql -u root -p slice_upi_analytics < analysis/02_next_action_churn.sql
 
 ```
 Slice-UPI-Analytics-PRD/
-├── README.md                              # This file
+├── README.md                              # This file (GitHub storefront + PRD)
 ├── report.md                              # Full project report
 ├── schema/
 │   └── schema.sql                         # MySQL schema (Users + Transactions)
 ├── data_generation/
-│   └── generate_transactions.py           # Synthetic data generator
+│   └── generate_transactions.py           # Synthetic data generator (10k rows)
 ├── analysis/
-│   ├── 01_base_funnel_analysis.sql        # Transaction status funnel
-│   └── 02_next_action_churn.sql           # Window function churn analysis
+│   ├── 01_base_funnel_analysis.sql        # Transaction status funnel query
+│   └── 02_next_action_churn.sql           # Window function churn analysis query
 ├── prd/
 │   └── Slice_UPI_Fallback_PRD.md          # Product Requirements Document
+├── dashboard/                             # Interactive React + Vite Dashboard
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── components/
+│   │   │   │   ├── Header.tsx             # Navigation, date filter & actions
+│   │   │   │   ├── Hero.tsx               # Payment health summary & critical stat
+│   │   │   │   ├── KpiCards.tsx           # Sparkline metric cards
+│   │   │   │   ├── StatusDistribution.tsx # Visual status breakdown & insights
+│   │   │   │   ├── Funnel.tsx             # MDR rejection user journey funnel
+│   │   │   │   ├── ChurnAnalysis.tsx      # Recharts bar chart & donut visualization
+│   │   │   │   ├── Opportunity.tsx        # Smart fallback workflow & UI mockup
+│   │   │   │   ├── Targets.tsx            # 4-week success metric benchmarks
+│   │   │   │   ├── FindingsTable.tsx      # Categorized executive findings
+│   │   │   │   └── data.ts                # Underlying metric models & constants
+│   │   │   └── App.tsx                    # Main dashboard container
+│   │   └── main.tsx                       # Entry point
+│   ├── package.json                       # Dependencies (Recharts, Radix, Tailwind)
+│   └── vite.config.ts                     # Vite build configuration
 └── assets/
     └── sql_findings_screenshot.png        # Query results screenshot
 ```
@@ -52,7 +83,7 @@ Slice-UPI-Analytics-PRD/
 
 UPI-linked credit card (Slice CC) transactions are growing fast, but small merchants — particularly kirana stores and local retailers — reject these payments to avoid the ~1.5–2% Merchant Discount Rate (MDR) fee. The user sees a generic "Transaction Failed" screen with no explanation and no fallback option.
 
-**Result:** A 62.8% session churn rate after MDR rejections — the worst churn rate of any transaction failure type.
+**Result:** A 62.8% session churn rate after MDR rejections — the highest churn rate of any transaction failure type.
 
 ---
 
@@ -78,6 +109,19 @@ Using `LEAD()` window functions to track user behavior within 5 minutes of an MD
 | **Retained** (retried via Slice Savings) | 77 | 37.2% |
 
 > **"When users face an MDR rejection, 62.8% abandon the app entirely within a 5-minute window."**
+
+---
+
+## Interactive Dashboard Features
+
+The integrated React dashboard (`dashboard/`) visualizes these insights for stakeholders:
+
+1. **KPI Scorecard**: Real-time transaction volume, success rates, MDR rejection count, and 5-min churn rate with trend sparklines.
+2. **Status Distribution**: Breakdown across all payment outcomes highlighting MDR rejections as 12.7% of all transaction failures.
+3. **MDR Funnel**: Step-by-step path comparing churned users (130) vs. retained users (77).
+4. **Failure Churn Comparison**: Recharts bar chart showing MDR rejections (62.8%) far exceed timeouts (24.1%), network errors (21.6%), and balance issues (11.4%).
+5. **Interactive PRD Solution Mockup**: Interactive flow comparing the current failure experience against the proposed Smart Fallback Bottom Sheet.
+6. **4-Week Target Scorecard**: Progress trackers towards reducing 5-minute churn from 62.8% to ≤30% and lifting session completion to ≥70%.
 
 ---
 
@@ -223,7 +267,7 @@ The synthetic data generator (`data_generation/generate_transactions.py`) implem
 
 ## Resume Bullet
 
-> **UPI Fallback Optimization** — Built a MySQL-backed analytics pipeline (10K synthetic transactions, window functions with `LEAD()`/`PARTITION BY`) to quantify 63% session churn from MDR-rejected UPI-CC payments; authored a PRD for a Smart Fallback UI projected to cut churn to ≤30%, with full A/B test measurement plan.
+> **UPI Fallback Optimization** — Built an end-to-end analytics and product suite (MySQL pipeline, 10K transactions, SQL window functions `LEAD()`/`PARTITION BY`, React dashboard) quantifying 63% churn from MDR-rejected UPI-CC payments; authored a PRD for a Smart Fallback UI projected to cut churn to ≤30% with a full A/B test framework.
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project investigates a specific failure mode in UPI-linked credit card transactions: **MDR (Merchant Discount Rate) avoidance by small merchants**, where kirana stores and local retailers reject Slice CC payments to avoid paying credit card processing fees. We built a complete data pipeline — from schema design to synthetic data generation to SQL analysis — to quantify the impact and propose a product solution.
+This project investigates a specific failure mode in UPI-linked credit card transactions: **MDR (Merchant Discount Rate) avoidance by small merchants**, where kirana stores and local retailers reject Slice CC payments to avoid paying credit card processing fees. We built a complete data pipeline — from schema design to synthetic data generation to SQL analysis, coupled with an interactive React analytics dashboard and a formal PRD — to quantify the impact and propose a product solution.
 
 ---
 
@@ -13,7 +13,8 @@ This project investigates a specific failure mode in UPI-linked credit card tran
 | Database | MySQL 8.0 (local instance, MySQL Workbench compatible) |
 | Scripting | Python 3 |
 | Libraries | `faker` (synthetic data), `pymysql` (MySQL connector) |
-| Analysis | Raw SQL with aggregation and window functions |
+| Analysis | Raw SQL with aggregation and window functions (`LEAD()`, `PARTITION BY`) |
+| Interactive Dashboard | React 18, Vite, TailwindCSS, Recharts, Radix UI / shadcn |
 | Documentation | Markdown (README.md, PRD, this report) |
 | Version Control | Git / GitHub |
 
@@ -45,6 +46,14 @@ Slice-UPI-Analytics-PRD/
 │   └── 02_next_action_churn.sql           # Window function churn analysis
 ├── prd/
 │   └── Slice_UPI_Fallback_PRD.md          # Product Requirements Document
+├── dashboard/                             # Interactive React + Vite Analytics Dashboard
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── components/                # Modular React dashboard components
+│   │   │   └── App.tsx                    # Master dashboard view
+│   │   └── main.tsx                       # React root
+│   ├── package.json                       # Front-end dependencies
+│   └── vite.config.ts                     # Vite build config
 └── assets/
     └── sql_findings_screenshot.png        # Query results (placeholder)
 ```
@@ -56,6 +65,7 @@ Slice-UPI-Analytics-PRD/
 ### Prerequisites
 - MySQL 8.0+ running locally
 - Python 3.x with `pip`
+- Node.js 18+ and `npm`
 
 ### Step-by-step
 
@@ -74,6 +84,11 @@ mysql -u root -p slice_upi_analytics < analysis/01_base_funnel_analysis.sql
 
 # 5. Run churn analysis
 mysql -u root -p slice_upi_analytics < analysis/02_next_action_churn.sql
+
+# 6. Launch the interactive analytics dashboard
+cd dashboard
+npm install
+npm run dev
 ```
 
 > **Note:** Update the MySQL credentials in `generate_transactions.py` (lines 14–17) to match your local setup before running.
@@ -107,6 +122,17 @@ Among all failed transactions (1,627 total), `MERCHANT_CC_REJECTED` represents *
 **Headline insight: When users face an MDR rejection, 62.8% abandon the app entirely within a 5-minute window.**
 
 The 37.2% retention rate comes from users who organically discovered the workaround of switching to Slice Savings — without any UI guidance. This suggests significant headroom for improvement with a guided fallback experience.
+
+---
+
+## Interactive Dashboard Implementation
+
+The project includes an interactive web dashboard in `dashboard/` designed with modern aesthetic standards:
+- **Dark-mode fintech aesthetic** with custom gradient accents.
+- **KPI sparkline cards** tracking volume, success rate, MDR rejections, and churn.
+- **Dynamic Recharts** visualizing failure-level churn comparisons and session outcome distributions.
+- **Step-by-step journey diagrams** contrasting current vs. proposed fallback user experiences.
+- **Live 4-week target milestones** with metric trackers.
 
 ---
 
