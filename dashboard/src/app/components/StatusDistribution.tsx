@@ -4,9 +4,10 @@ import { SimulationResult } from "./simulationEngine";
 
 interface StatusDistributionProps {
   result: SimulationResult;
+  onViewAnalysis?: () => void;
 }
 
-export function StatusDistribution({ result }: StatusDistributionProps) {
+export function StatusDistribution({ result, onViewAnalysis }: StatusDistributionProps) {
   const max = Math.max(...result.statusDistribution.map((s) => s.count)) || 1;
 
   return (
@@ -64,10 +65,13 @@ export function StatusDistribution({ result }: StatusDistributionProps) {
           <p className="mt-3 text-[0.75rem] leading-relaxed text-muted-foreground">
             Unlike technical timeouts, MDR rejections are merchant-initiated and cannot be resolved by retrying with the same credit card.
           </p>
-          <div className="mt-4 flex items-center gap-1.5 text-[0.8125rem] font-medium text-primary">
-            <span>MDR avoidance active</span>
+          <button
+            onClick={onViewAnalysis}
+            className="mt-4 flex items-center gap-1.5 text-[0.8125rem] font-medium text-primary transition-colors hover:text-magenta cursor-pointer"
+          >
+            <span>View Churn Breakdown</span>
             <ArrowRight className="size-3.5" />
-          </div>
+          </button>
         </div>
       </div>
     </Card>
