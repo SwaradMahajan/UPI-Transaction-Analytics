@@ -264,12 +264,3 @@ The synthetic data generator (`data_generation/generate_transactions.py`) implem
 - A/B testing the Smart Fallback UI
 - ML-based pre-emptive payment method suggestions
 
----
-
-## Resume Bullet
-
-> **UPI Analytics & Fallback Optimization** — Built an end-to-end analytics and product suite (MySQL pipeline, 10K transactions, SQL window functions `LEAD()`/`PARTITION BY`, React dashboard with Monte Carlo simulation) quantifying 63% churn from MDR-rejected UPI credit card payments; authored a PRD for a Smart Fallback UI projected to cut churn to ≤30% with a full A/B test framework.
-
----
-
-*Built as a data analytics + product management portfolio project. Synthetic data — production validation required.*
