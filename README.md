@@ -1,6 +1,6 @@
-# Slice UPI-CC Churn Analysis + PRD & Interactive Dashboard
+# UPI Analytics — Payment Metrics, Churn Analysis & PRD
 
-**Small merchants reject UPI-linked credit card payments to avoid MDR fees — and 63% of affected users abandon the app within 5 minutes.** This project uses MySQL, Python, and SQL window functions to quantify the churn impact of `MERCHANT_CC_REJECTED` failures, delivers a Product Requirements Document (PRD) for a Smart Fallback UI that cuts churn to ≤30%, and includes an interactive React analytics dashboard.
+**Small merchants frequently reject UPI-linked credit card payments to avoid MDR processing fees — and 63% of affected users abandon the app within 5 minutes.** This project uses MySQL, Python, and SQL window functions to quantify the churn impact of `MERCHANT_CC_REJECTED` failures, delivers a Product Requirements Document (PRD) for a Smart Fallback UI that cuts churn to ≤30%, and includes an interactive React analytics dashboard with a live simulation engine.
 
 Built with: MySQL 8.0 · Python 3 · Faker · Raw SQL (aggregation + window functions) · React 18 · Vite · TailwindCSS · Recharts · Radix UI / shadcn
 
@@ -20,8 +20,8 @@ pip install faker pymysql
 python data_generation/generate_transactions.py
 
 # 4. Run SQL analysis
-mysql -u root -p slice_upi_analytics < analysis/01_base_funnel_analysis.sql
-mysql -u root -p slice_upi_analytics < analysis/02_next_action_churn.sql
+mysql -u root -p upi_analytics < analysis/01_base_funnel_analysis.sql
+mysql -u root -p upi_analytics < analysis/02_next_action_churn.sql
 ```
 
 ### 2. Interactive Analytics Dashboard (React + Vite)
@@ -36,14 +36,12 @@ npm install
 npm run dev
 ```
 
-> **Note:** Update MySQL credentials in `generate_transactions.py` before running the data generator.
-
 ---
 
 ## Project Structure
 
 ```
-Slice-UPI-Analytics-PRD/
+UPI-Analytics-PRD/
 ├── README.md                              # This file (GitHub storefront + PRD)
 ├── report.md                              # Full project report
 ├── schema/
@@ -54,13 +52,15 @@ Slice-UPI-Analytics-PRD/
 │   ├── 01_base_funnel_analysis.sql        # Transaction status funnel query
 │   └── 02_next_action_churn.sql           # Window function churn analysis query
 ├── prd/
-│   └── Slice_UPI_Fallback_PRD.md          # Product Requirements Document
+│   └── UPI_Fallback_PRD.md                # Product Requirements Document
 ├── dashboard/                             # Interactive React + Vite Dashboard
 │   ├── src/
 │   │   ├── app/
 │   │   │   ├── components/
-│   │   │   │   ├── Header.tsx             # Navigation, date filter & actions
+│   │   │   │   ├── Header.tsx             # Navigation & branding
 │   │   │   │   ├── Hero.tsx               # Payment health summary & critical stat
+│   │   │   │   ├── SimulationWindow.tsx   # Live transaction parameter tuning & engine
+│   │   │   │   ├── simulationEngine.ts    # Monte Carlo simulation engine
 │   │   │   │   ├── KpiCards.tsx           # Sparkline metric cards
 │   │   │   │   ├── StatusDistribution.tsx # Visual status breakdown & insights
 │   │   │   │   ├── Funnel.tsx             # MDR rejection user journey funnel
@@ -68,7 +68,7 @@ Slice-UPI-Analytics-PRD/
 │   │   │   │   ├── Opportunity.tsx        # Smart fallback workflow & UI mockup
 │   │   │   │   ├── Targets.tsx            # 4-week success metric benchmarks
 │   │   │   │   ├── FindingsTable.tsx      # Categorized executive findings
-│   │   │   │   └── data.ts                # Underlying metric models & constants
+│   │   │   │   └── data.ts                # Metric models & constants
 │   │   │   └── App.tsx                    # Main dashboard container
 │   │   └── main.tsx                       # Entry point
 │   ├── package.json                       # Dependencies (Recharts, Radix, Tailwind)
@@ -81,7 +81,7 @@ Slice-UPI-Analytics-PRD/
 
 ## The Problem
 
-UPI-linked credit card (Slice CC) transactions are growing fast, but small merchants — particularly kirana stores and local retailers — reject these payments to avoid the ~1.5–2% Merchant Discount Rate (MDR) fee. The user sees a generic "Transaction Failed" screen with no explanation and no fallback option.
+UPI-linked credit card (`UPI_CC`) transactions are growing fast, but micro and small merchants — particularly kirana stores and local retailers — reject these payments to avoid the ~1.5–2% Merchant Discount Rate (MDR) fee. The user sees a generic "Transaction Failed" screen with no explanation and no fallback option.
 
 **Result:** A 62.8% session churn rate after MDR rejections — the highest churn rate of any transaction failure type.
 
@@ -106,7 +106,7 @@ Using `LEAD()` window functions to track user behavior within 5 minutes of an MD
 | Outcome | Count | % |
 |---|---|---|
 | **Churned** (abandoned session) | 130 | 62.8% |
-| **Retained** (retried via Slice Savings) | 77 | 37.2% |
+| **Retained** (retried via UPI Savings) | 77 | 37.2% |
 
 > **"When users face an MDR rejection, 62.8% abandon the app entirely within a 5-minute window."**
 
@@ -114,14 +114,15 @@ Using `LEAD()` window functions to track user behavior within 5 minutes of an MD
 
 ## Interactive Dashboard Features
 
-The integrated React dashboard (`dashboard/`) visualizes these insights for stakeholders:
+The integrated React dashboard (`dashboard/`) visualizes these insights:
 
-1. **KPI Scorecard**: Real-time transaction volume, success rates, MDR rejection count, and 5-min churn rate with trend sparklines.
-2. **Status Distribution**: Breakdown across all payment outcomes highlighting MDR rejections as 12.7% of all transaction failures.
-3. **MDR Funnel**: Step-by-step path comparing churned users (130) vs. retained users (77).
-4. **Failure Churn Comparison**: Recharts bar chart showing MDR rejections (62.8%) far exceed timeouts (24.1%), network errors (21.6%), and balance issues (11.4%).
-5. **Interactive PRD Solution Mockup**: Interactive flow comparing the current failure experience against the proposed Smart Fallback Bottom Sheet.
-6. **4-Week Target Scorecard**: Progress trackers towards reducing 5-minute churn from 62.8% to ≤30% and lifting session completion to ≥70%.
+1. **Simulation Control Window**: Configure total transaction volume (1K–50K+), MDR rejection probability, retry rate, and baseline reliability to test scenarios in real-time.
+2. **KPI Scorecard**: Real-time transaction volume, success rates, MDR rejection count, and 5-min churn rate with trend sparklines.
+3. **Status Distribution**: Breakdown across all payment outcomes highlighting MDR rejections as 12.7% of all transaction failures.
+4. **MDR Funnel**: Step-by-step path comparing churned users (130) vs. retained users (77).
+5. **Failure Churn Comparison**: Recharts bar chart showing MDR rejections (62.8%) far exceed timeouts (24.1%), network errors (21.6%), and balance issues (11.4%).
+6. **Interactive PRD Solution Mockup**: Interactive flow comparing the current failure experience against the proposed Smart Fallback Bottom Sheet.
+7. **4-Week Target Scorecard**: Progress trackers towards reducing 5-minute churn from 62.8% to ≤30% and lifting session completion to ≥70%.
 
 ---
 
@@ -135,32 +136,32 @@ UPI-CC is scaling, but MDR avoidance by small merchants causes a ~63% session ch
 
 - **2.07%** of all transactions are `MERCHANT_CC_REJECTED`
 - **62.8%** of affected users churn within 5 minutes
-- Only **37.2%** organically discover the Slice Savings workaround — with zero UI guidance
-- All MDR rejections occur on **high-value transactions (> ₹2,000)** at kirana/retail merchants — Slice's core use case
+- Only **37.2%** organically discover the UPI Savings workaround — with zero UI guidance
+- All MDR rejections occur on **high-value transactions (> ₹2,000)** at kirana/retail merchants
 
 ### Proposed Solution: Smart Fallback UI
 
 When the backend returns `MERCHANT_CC_REJECTED`, **do not show a generic error.** Instead, trigger a **bottom-sheet overlay**:
 
 > **"Credit Card blocked by merchant"**  
-> This merchant doesn't accept credit card payments via UPI.  
+> This merchant does not accept credit card payments via UPI.  
 >  
-> **[Pay ₹{amount} via Slice Savings →]**  
+> **[Pay ₹{amount} via UPI Savings Account →]**  
 >  
-> _Your Slice Savings balance: ₹{balance}_
+> _Your UPI Savings balance: ₹{balance}_
 
 **Design principles:**
 - **Contextual explanation** — Tell users *why* it failed (merchant policy, not their fault)
 - **One-tap fallback** — Pre-populated retry with same merchant, amount, and session context
 - **Zero friction** — No re-entry of UPI PIN if biometric auth is cached
-- **Trust signal** — Show Slice Savings balance to reduce hesitation
+- **Trust signal** — Show UPI Savings balance to reduce hesitation
 
 **Edge cases:**
 
 | Scenario | Behavior |
 |---|---|
-| Balance < amount | Show balance, disable CTA, suggest "Add money" |
-| User dismisses sheet | Log `FALLBACK_DISMISSED`, show standard error |
+| Balance < amount | Show balance, disable CTA, suggest "Add money / Select another bank" |
+| User dismisses sheet | Log `FALLBACK_DISMISSED`, show standard payment selection |
 | Second payment fails | Standard error, no loop |
 
 **Technical requirements:**
@@ -178,7 +179,7 @@ When the backend returns `MERCHANT_CC_REJECTED`, **do not show a generic error.*
 
 **Guardrails:** Fallback transaction failure rate < 5%, time-to-completion < 10s, support tickets down ≥ 40%.
 
-**Measurement:** A/B test on 10% Android users for 2 weeks, full funnel instrumentation, post-launch user interviews (n=20).
+**Measurement:** A/B test on 10% users for 2 weeks, full funnel instrumentation, post-launch user interviews (n=20).
 
 ---
 
@@ -236,7 +237,7 @@ WITH NextTransactionData AS (
 )
 SELECT 
     COUNT(*) as total_rejections,
-    SUM(CASE WHEN next_status = 'SUCCESS' AND next_method = 'SLICE_SAVINGS' 
+    SUM(CASE WHEN next_status = 'SUCCESS' AND next_method = 'UPI_SAVINGS' 
               AND TIMESTAMPDIFF(MINUTE, transaction_time, next_txn_time) <= 5 THEN 1 ELSE 0 END) as retained_users,
     SUM(CASE WHEN next_txn_time IS NULL OR TIMESTAMPDIFF(MINUTE, transaction_time, next_txn_time) > 5 THEN 1 ELSE 0 END) as churned_users
 FROM NextTransactionData
@@ -247,8 +248,8 @@ WHERE current_status = 'MERCHANT_CC_REJECTED';
 
 The synthetic data generator (`data_generation/generate_transactions.py`) implements:
 - **500 users**, **10,000 transactions** across 8 merchant categories
-- **MDR rejection trigger:** `SLICE_CC` + amount > ₹2,000 + `KIRANA`/`RETAIL` → 40% rejection rate
-- **Post-rejection fork:** 35% retry via Slice Savings (retention) / 65% no follow-up (churn)
+- **MDR rejection trigger:** `UPI_CC` + amount > ₹2,000 + `KIRANA`/`RETAIL` → 40% rejection rate
+- **Post-rejection fork:** 35% retry via `UPI_SAVINGS` (retention) / 65% no follow-up (churn)
 - Batch inserts (500 rows/batch) via `pymysql`
 
 </details>
@@ -267,7 +268,7 @@ The synthetic data generator (`data_generation/generate_transactions.py`) implem
 
 ## Resume Bullet
 
-> **UPI Fallback Optimization** — Built an end-to-end analytics and product suite (MySQL pipeline, 10K transactions, SQL window functions `LEAD()`/`PARTITION BY`, React dashboard) quantifying 63% churn from MDR-rejected UPI-CC payments; authored a PRD for a Smart Fallback UI projected to cut churn to ≤30% with a full A/B test framework.
+> **UPI Analytics & Fallback Optimization** — Built an end-to-end analytics and product suite (MySQL pipeline, 10K transactions, SQL window functions `LEAD()`/`PARTITION BY`, React dashboard with Monte Carlo simulation) quantifying 63% churn from MDR-rejected UPI credit card payments; authored a PRD for a Smart Fallback UI projected to cut churn to ≤30% with a full A/B test framework.
 
 ---
 

@@ -1,8 +1,8 @@
-# Slice UPI-CC Churn Analysis — Project Report
+# UPI Analytics — Payment Metrics & Fallback Churn Analysis Report
 
 ## Overview
 
-This project investigates a specific failure mode in UPI-linked credit card transactions: **MDR (Merchant Discount Rate) avoidance by small merchants**, where kirana stores and local retailers reject Slice CC payments to avoid paying credit card processing fees. We built a complete data pipeline — from schema design to synthetic data generation to SQL analysis, coupled with an interactive React analytics dashboard and a formal PRD — to quantify the impact and propose a product solution.
+This project investigates a specific friction point in UPI-linked credit card transactions: **MDR (Merchant Discount Rate) avoidance by micro & small merchants**, where kirana stores and local retailers reject credit card transactions to avoid payment processing fees. We built a complete data pipeline — from schema design to synthetic data generation to SQL window function analysis, coupled with an interactive React analytics dashboard and a formal PRD — to quantify the churn impact and engineer a Smart Fallback product solution.
 
 ---
 
@@ -22,10 +22,10 @@ This project investigates a specific failure mode in UPI-linked credit card tran
 
 ## Database Design
 
-Two normalized tables in the `slice_upi_analytics` database:
+Two normalized tables in the `upi_analytics` database:
 
 - **Users** — 500 synthetic users with `user_id`, `account_vintage_days`, and `default_payment_method`.
-- **Transactions** — 10,000 synthetic transactions with full metadata: timestamp, merchant category, amount, payment method attempted, and transaction status.
+- **Transactions** — 10,000 synthetic transactions with full metadata: timestamp, merchant category, amount, payment method attempted (`UPI_CC`, `UPI_SAVINGS`, `UPI_OTHER`, `DEBIT_CARD`), and transaction status.
 
 The schema enforces referential integrity via a foreign key from `Transactions.user_id` → `Users.user_id`.
 
@@ -34,7 +34,7 @@ The schema enforces referential integrity via a foreign key from `Transactions.u
 ## File Structure
 
 ```
-Slice-UPI-Analytics-PRD/
+UPI-Analytics-PRD/
 ├── README.md                              # GitHub storefront with embedded PRD
 ├── report.md                              # This report
 ├── schema/
@@ -45,7 +45,7 @@ Slice-UPI-Analytics-PRD/
 │   ├── 01_base_funnel_analysis.sql        # Transaction status funnel
 │   └── 02_next_action_churn.sql           # Window function churn analysis
 ├── prd/
-│   └── Slice_UPI_Fallback_PRD.md          # Product Requirements Document
+│   └── UPI_Fallback_PRD.md                # Product Requirements Document
 ├── dashboard/                             # Interactive React + Vite Analytics Dashboard
 │   ├── src/
 │   │   ├── app/
@@ -80,18 +80,16 @@ pip install faker pymysql
 python data_generation/generate_transactions.py
 
 # 4. Run base funnel analysis
-mysql -u root -p slice_upi_analytics < analysis/01_base_funnel_analysis.sql
+mysql -u root -p upi_analytics < analysis/01_base_funnel_analysis.sql
 
 # 5. Run churn analysis
-mysql -u root -p slice_upi_analytics < analysis/02_next_action_churn.sql
+mysql -u root -p upi_analytics < analysis/02_next_action_churn.sql
 
 # 6. Launch the interactive analytics dashboard
 cd dashboard
 npm install
 npm run dev
 ```
-
-> **Note:** Update the MySQL credentials in `generate_transactions.py` (lines 14–17) to match your local setup before running.
 
 ---
 
@@ -107,7 +105,7 @@ npm run dev
 | NETWORK_ERROR | 453 | 4.53% |
 | MERCHANT_CC_REJECTED | 207 | 2.07% |
 
-`MERCHANT_CC_REJECTED` accounts for **2.07% of all transactions** — a small slice of total volume, but unlike technical failures (timeout, network error), this failure type is entirely merchant-initiated and has the highest downstream impact on user behavior.
+`MERCHANT_CC_REJECTED` accounts for **2.07% of all transactions** — a concentrated share of total volume, but unlike technical failures (timeout, network error), this failure type is entirely merchant-initiated and has the highest downstream impact on user behavior.
 
 Among all failed transactions (1,627 total), `MERCHANT_CC_REJECTED` represents **12.7% of failures** — comparable in volume to any single technical failure type, but uniquely damaging because the user cannot resolve it by retrying with the same payment method.
 
@@ -116,19 +114,20 @@ Among all failed transactions (1,627 total), `MERCHANT_CC_REJECTED` represents *
 | Metric | Value |
 |---|---|
 | Total MDR Rejections | 207 |
-| Users who retried via Slice Savings (retained) | 77 (37.2%) |
+| Users who retried via UPI Savings (retained) | 77 (37.2%) |
 | Users who abandoned the session (churned) | 130 (62.8%) |
 
 **Headline insight: When users face an MDR rejection, 62.8% abandon the app entirely within a 5-minute window.**
 
-The 37.2% retention rate comes from users who organically discovered the workaround of switching to Slice Savings — without any UI guidance. This suggests significant headroom for improvement with a guided fallback experience.
+The 37.2% retention rate comes from users who organically discovered the workaround of switching to a UPI Savings Account — without any UI guidance. This demonstrates strong headroom for improvement with a guided Smart Fallback experience.
 
 ---
 
 ## Interactive Dashboard Implementation
 
-The project includes an interactive web dashboard in `dashboard/` designed with modern aesthetic standards:
+The project includes an interactive web dashboard in `dashboard/` with:
 - **Dark-mode fintech aesthetic** with custom gradient accents.
+- **Simulation Control Window** with real-time parameter tuning (total transactions, rejection probabilities, threshold amounts, and Monte Carlo engine).
 - **KPI sparkline cards** tracking volume, success rate, MDR rejections, and churn.
 - **Dynamic Recharts** visualizing failure-level churn comparisons and session outcome distributions.
 - **Step-by-step journey diagrams** contrasting current vs. proposed fallback user experiences.
@@ -139,7 +138,7 @@ The project includes an interactive web dashboard in `dashboard/` designed with 
 ## Future Scope
 
 1. **Production data validation** — Run the same churn analysis on live transaction logs to validate synthetic findings.
-2. **Merchant-level analysis** — Identify specific merchants with high MDR rejection rates and consider merchant-side interventions (education, incentives).
+2. **Merchant-level analysis** — Identify specific merchants with high MDR rejection rates and consider merchant-side interventions.
 3. **Time-series analysis** — Track whether MDR rejections are increasing as UPI-CC adoption grows.
 4. **A/B test the Smart Fallback UI** — Implement the PRD's proposed bottom-sheet solution and measure churn rate reduction in a controlled rollout.
 5. **ML-based prediction** — Build a model to predict MDR rejection likelihood *before* the transaction, enabling pre-emptive payment method suggestions.

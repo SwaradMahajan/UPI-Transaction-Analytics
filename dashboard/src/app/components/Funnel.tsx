@@ -11,7 +11,7 @@ export function Funnel({ result }: FunnelProps) {
     <Card className="p-6" elevated>
       <SectionHeading
         title="MDR Rejection → User Outcome Funnel"
-        subtitle="What happens to users after a merchant rejects their Slice Credit Card payment"
+        subtitle="What happens to users after a merchant rejects their UPI Credit Card payment"
       />
 
       <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-[220px_48px_1fr]">
@@ -83,7 +83,7 @@ export function Funnel({ result }: FunnelProps) {
                   </span>
                 </div>
                 <p className="mt-1 text-[0.8125rem] text-muted-foreground">
-                  Retried successfully using Slice Savings within 5 minutes
+                  Retried successfully using a linked UPI Savings Account within 5 minutes
                 </p>
               </div>
             </div>
@@ -100,9 +100,9 @@ export function Funnel({ result }: FunnelProps) {
           <Lightbulb className="size-4" />
         </div>
         <p className="text-[0.875rem] leading-relaxed text-foreground/90">
-          The biggest product opportunity is immediately after a merchant rejects Slice CC.
+          The biggest product opportunity is immediately after a merchant rejects a UPI Credit Card.
           Currently, <span className="font-semibold text-primary">{result.retentionRate}%</span> of users
-          discover the Slice Savings workaround organically, while <span className="font-semibold text-danger">{result.churnRate}%</span> drop off.
+          discover the UPI Savings workaround organically, while <span className="font-semibold text-danger">{result.churnRate}%</span> drop off.
         </p>
       </div>
     </Card>

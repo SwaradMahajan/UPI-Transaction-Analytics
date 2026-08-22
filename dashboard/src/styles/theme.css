@@ -3,7 +3,7 @@
 :root {
   --font-size: 16px;
 
-  /* Slice Analytics — dark navy fintech ground */
+  /* UPI Analytics — dark navy fintech ground */
   --background: #0a0b14;
   --foreground: #f4f4f8;
   --card: #12131f;
@@ -12,7 +12,7 @@
   --popover: #12131f;
   --popover-foreground: #f4f4f8;
 
-  /* Slice vibrant purple/magenta accent */
+  /* Vibrant purple/magenta accent */
   --primary: #a855f7;
   --primary-foreground: #ffffff;
   --secondary: #1a1c2b;

@@ -1,12 +1,13 @@
 """
 Synthetic UPI Transaction Data Generator
-Generates ~10,000 transaction rows with realistic MDR rejection behavior.
+Generates ~10,000 transaction rows with realistic MDR rejection behavior for UPI Analytics.
 
 Behavioral logic:
-- SLICE_CC transactions > ₹2,000 at KIRANA/RETAIL → 40% MERCHANT_CC_REJECTED
-- On rejection: 35% retry via SLICE_SAVINGS (retention), 65% no follow-up (churn)
+- UPI_CC transactions > ₹2,000 at KIRANA/RETAIL → 40% MERCHANT_CC_REJECTED
+- On rejection: 35% retry via UPI_SAVINGS (retention), 65% no follow-up (churn)
 """
 
+import os
 import random
 import uuid
 from datetime import datetime, timedelta
@@ -14,16 +15,16 @@ from faker import Faker
 import pymysql
 
 # --- Configuration ---
-MYSQL_HOST = "localhost"
-MYSQL_USER = "root"
-MYSQL_PASSWORD = "baataMS@32"
-MYSQL_DB = "slice_upi_analytics"
+MYSQL_HOST = os.environ.get("MYSQL_HOST", "localhost")
+MYSQL_USER = os.environ.get("MYSQL_USER", "root")
+MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD", "baataMS@32")
+MYSQL_DB = os.environ.get("MYSQL_DB", "upi_analytics")
 
 NUM_USERS = 500
 TARGET_TRANSACTIONS = 10000
 BATCH_SIZE = 500
 
-PAYMENT_METHODS = ["SLICE_CC", "SLICE_SAVINGS", "UPI_OTHER", "DEBIT_CARD"]
+PAYMENT_METHODS = ["UPI_CC", "UPI_SAVINGS", "UPI_OTHER", "DEBIT_CARD"]
 MERCHANT_CATEGORIES = ["KIRANA", "RETAIL", "FOOD_DELIVERY", "ELECTRONICS", "TRAVEL", "ENTERTAINMENT", "GROCERY", "PHARMACY"]
 SUCCESS_STATUSES = ["SUCCESS"]
 FAILURE_STATUSES = ["TIMEOUT", "INSUFFICIENT_BALANCE", "NETWORK_ERROR"]
@@ -72,7 +73,7 @@ def generate_transactions(users, target_count):
         amount = round(random.uniform(50, 15000), 2)
         
         # --- Core MDR rejection logic ---
-        if (payment_method == "SLICE_CC"
+        if (payment_method == "UPI_CC"
                 and amount > 2000
                 and merchant_category in ("KIRANA", "RETAIL")):
             # 40% chance of merchant rejecting due to MDR
@@ -87,13 +88,13 @@ def generate_transactions(users, target_count):
                 
                 # Fork: 35% retention, 65% churn
                 if random.random() < 0.35:
-                    # Retained — user retries via SLICE_SAVINGS within 15-60 sec
+                    # Retained — user retries via UPI_SAVINGS within 15-60 sec
                     retry_delay = random.randint(15, 60)
                     retry_time = txn_time + timedelta(seconds=retry_delay)
                     retry_txn_id = f"TXN_{uuid.uuid4().hex[:16].upper()}"
                     transactions.append((
                         retry_txn_id, user_id, retry_time, merchant_category,
-                        amount, "SLICE_SAVINGS", "SUCCESS"
+                        amount, "UPI_SAVINGS", "SUCCESS"
                     ))
                     stats["total"] += 1
                     stats["retained"] += 1
@@ -134,18 +135,40 @@ def insert_batch(cursor, table, columns, rows, batch_size):
 
 def main():
     print("=" * 60)
-    print("  Slice UPI Analytics — Synthetic Data Generator")
+    print("  UPI Analytics — Synthetic Data Generator")
     print("=" * 60)
     
-    # Connect to MySQL
+    # Connect to MySQL (create DB if not exists)
     conn = pymysql.connect(
         host=MYSQL_HOST,
         user=MYSQL_USER,
         password=MYSQL_PASSWORD,
-        database=MYSQL_DB,
         charset="utf8mb4"
     )
     cursor = conn.cursor()
+    cursor.execute(f"CREATE DATABASE IF NOT EXISTS {MYSQL_DB}")
+    cursor.execute(f"USE {MYSQL_DB}")
+    
+    # Ensure tables exist
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS Users (
+        user_id VARCHAR(50) PRIMARY KEY,
+        account_vintage_days INT,
+        default_payment_method VARCHAR(20)
+    );
+    """)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS Transactions (
+        transaction_id VARCHAR(50) PRIMARY KEY,
+        user_id VARCHAR(50),
+        transaction_time TIMESTAMP,
+        merchant_category VARCHAR(50),
+        amount DECIMAL(10,2),
+        payment_method_attempted VARCHAR(20),
+        status VARCHAR(30),
+        FOREIGN KEY (user_id) REFERENCES Users(user_id)
+    );
+    """)
     
     # Clear existing data (for re-runs)
     cursor.execute("DELETE FROM Transactions")

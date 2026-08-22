@@ -262,7 +262,7 @@ export function SimulationWindow({
                 </span>
               </div>
               <p className="mt-1 text-[0.6875rem] text-muted-foreground">
-                Users retrying via Slice Savings (vs. Churn).
+                Users retrying via UPI Savings (vs. Churn).
               </p>
             </div>
             <div className="mt-4">

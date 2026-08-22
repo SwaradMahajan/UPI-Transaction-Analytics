@@ -1,10 +1,10 @@
 // Simulation Engine for UPI Payment Metrics
-// Implements the synthetic data generation logic from the Python pipeline directly in browser
+// Implements the synthetic data generation logic directly in browser
 
 export interface SimulationParams {
   totalTransactions: number;
   mdrRejectionRate: number; // e.g. 0.40 (40%)
-  retentionRate: number;    // e.g. 0.35 (35% retry with Slice Savings)
+  retentionRate: number;    // e.g. 0.35 (35% retry with UPI Savings)
   baseSuccessRate: number;  // e.g. 0.85 (85%)
   amountThreshold: number;  // e.g. 2000
   seed?: number;
@@ -89,7 +89,7 @@ export function runSimulation(userParams: Partial<SimulationParams> = {}): Simul
   const seed = params.seed ?? Math.floor(Math.random() * 1000000);
   const rand = createRng(seed);
 
-  const paymentMethods = ["SLICE_CC", "SLICE_SAVINGS", "UPI_OTHER", "DEBIT_CARD"];
+  const paymentMethods = ["UPI_CC", "UPI_SAVINGS", "UPI_OTHER", "DEBIT_CARD"];
   const merchantCategories = [
     "KIRANA", "RETAIL", "FOOD_DELIVERY", "ELECTRONICS",
     "TRAVEL", "ENTERTAINMENT", "GROCERY", "PHARMACY"
@@ -124,7 +124,7 @@ export function runSimulation(userParams: Partial<SimulationParams> = {}): Simul
 
     // MDR rejection condition
     if (
-      paymentMethod === "SLICE_CC" &&
+      paymentMethod === "UPI_CC" &&
       amount > params.amountThreshold &&
       (merchantCategory === "KIRANA" || merchantCategory === "RETAIL")
     ) {

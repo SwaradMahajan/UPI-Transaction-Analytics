@@ -14,10 +14,10 @@ export function Header() {
           </div>
           <div className="leading-none">
             <div className="text-[0.9375rem] font-semibold tracking-tight text-foreground" style={{ fontFamily: "var(--font-display)" }}>
-              SLICE ANALYTICS
+              UPI ANALYTICS
             </div>
             <div className="mt-1 text-[0.625rem] tracking-[0.18em] text-muted-foreground">
-              UPI PAYMENT INSIGHTS
+              PAYMENT INSIGHTS & METRICS
             </div>
           </div>
         </div>
@@ -57,7 +57,7 @@ export function Header() {
             Export
           </button>
           <div className="ml-1 grid size-9 place-items-center rounded-full bg-gradient-to-br from-blue-400 to-primary text-[0.75rem] font-semibold text-white">
-            AK
+            UA
           </div>
         </div>
       </div>

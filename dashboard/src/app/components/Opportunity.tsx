@@ -56,7 +56,7 @@ export function Opportunity({ result }: OpportunityProps) {
                 Current Experience
               </div>
               <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-0">
-                <div className="flex-1"><FlowStep label="Slice CC Payment" tone="neutral" /></div>
+                <div className="flex-1"><FlowStep label="UPI-CC Payment" tone="neutral" /></div>
                 <div className="md:px-2"><Arrow /></div>
                 <div className="flex-1"><FlowStep label="Merchant Rejects" tone="danger" /></div>
                 <div className="md:px-2"><Arrow /></div>
@@ -72,13 +72,13 @@ export function Opportunity({ result }: OpportunityProps) {
                 Proposed Experience
               </div>
               <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-0">
-                <div className="flex-1"><FlowStep label="Slice CC Payment" tone="neutral" /></div>
+                <div className="flex-1"><FlowStep label="UPI-CC Payment" tone="neutral" /></div>
                 <div className="md:px-2"><Arrow /></div>
                 <div className="flex-1"><FlowStep label="Merchant Rejects" tone="neutral" /></div>
                 <div className="md:px-2"><Arrow /></div>
                 <div className="flex-1"><FlowStep label="Smart Fallback Bottom Sheet" tone="purple" /></div>
                 <div className="md:px-2"><Arrow /></div>
-                <div className="flex-1"><FlowStep label="Pay via Slice Savings" tone="purple" /></div>
+                <div className="flex-1"><FlowStep label="Pay via UPI Savings" tone="purple" /></div>
                 <div className="md:px-2"><Arrow /></div>
                 <div className="flex-1"><FlowStep label="≥ 70% Session Retention" tone="success" /></div>
               </div>
@@ -100,7 +100,7 @@ export function Opportunity({ result }: OpportunityProps) {
                     Credit Card blocked by merchant
                   </div>
                   <p className="mt-1 text-[0.75rem] leading-snug text-muted-foreground">
-                    This merchant doesn't accept credit card payments via UPI.
+                    This merchant does not accept credit card payments via UPI.
                   </p>
                 </div>
               </div>
@@ -111,20 +111,20 @@ export function Opportunity({ result }: OpportunityProps) {
                     <Wallet className="size-4" />
                   </div>
                   <div>
-                    <div className="text-[0.8125rem] text-foreground">Slice Savings</div>
+                    <div className="text-[0.8125rem] text-foreground">UPI Savings Account</div>
                     <div className="text-[0.6875rem] text-muted-foreground" style={{ fontVariantNumeric: "tabular-nums" }}>
-                      Balance: ₹8,620
+                      Available Balance: ₹8,620
                     </div>
                   </div>
                 </div>
               </div>
 
               <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-magenta py-3 text-[0.875rem] font-semibold text-white shadow-[0_8px_20px_-6px_rgba(168,85,247,0.6)] transition-transform hover:scale-[1.01]">
-                Pay ₹2,450 via Slice Savings
+                Pay ₹2,450 via UPI Savings
                 <ArrowRight className="size-4" />
               </button>
               <div className="mt-3 text-center text-[0.6875rem] text-muted-foreground">
-                Instant · No merchant restrictions
+                Instant · Zero merchant restrictions
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 -- Base Funnel Analysis
 -- Shows the volume and percentage breakdown of all transaction statuses
 
-USE slice_upi_analytics;
+USE upi_analytics;
 
 SELECT 
     status, 

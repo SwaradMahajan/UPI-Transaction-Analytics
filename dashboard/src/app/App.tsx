@@ -63,7 +63,7 @@ export default function App() {
         </div>
 
         <footer className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-border pt-6 text-[0.75rem] text-muted-foreground">
-          <span>Slice Analytics · UPI Payment Insights & Simulation Engine</span>
+          <span>UPI Analytics · Payment Insights & Simulation Engine</span>
           <span>
             Active Simulation: {simulationResult.totalTransactions.toLocaleString()} transactions · Seed #{simulationResult.seed} · Generated in {simulationResult.runDurationMs}ms
           </span>

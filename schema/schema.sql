@@ -1,8 +1,8 @@
--- Slice UPI Analytics - Database Schema
--- Creates the core tables for UPI transaction analysis
+-- UPI Analytics - Database Schema
+-- Creates the core tables for universal UPI transaction analysis
 
-CREATE DATABASE IF NOT EXISTS slice_upi_analytics;
-USE slice_upi_analytics;
+CREATE DATABASE IF NOT EXISTS upi_analytics;
+USE upi_analytics;
 
 DROP TABLE IF EXISTS Transactions;
 DROP TABLE IF EXISTS Users;

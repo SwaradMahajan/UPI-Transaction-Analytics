@@ -147,7 +147,7 @@ export function ChurnAnalysis({ result }: ChurnAnalysisProps) {
         </div>
         <p className="mt-4 border-t border-border pt-3 text-[0.8125rem] text-muted-foreground">
           <span className="font-semibold text-success">{result.retainedCount.toLocaleString()} users</span> successfully
-          switched to Slice Savings.
+          switched to a linked UPI Savings Account.
         </p>
       </Card>
     </div>

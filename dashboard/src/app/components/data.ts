@@ -1,7 +1,7 @@
-// Shared realistic dashboard data for Slice Analytics — UPI Payment Insights
+// Shared realistic dashboard data for UPI Analytics — Payment Insights & Metrics
 
 export const COLORS = {
-  primary: "#a855f7", // slice purple
+  primary: "#a855f7", // vibrant purple
   magenta: "#ec4899",
   blue: "#60a5fa",
   success: "#22c99a",
