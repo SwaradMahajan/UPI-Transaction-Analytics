@@ -13,7 +13,8 @@ import {
 } from "recharts";
 import { AlertTriangle } from "lucide-react";
 import { Card, SectionHeading } from "./primitives";
-import { churnByFailure, COLORS, postRejection } from "./data";
+import { COLORS } from "./data";
+import { SimulationResult } from "./simulationEngine";
 
 const barColor: Record<string, string> = {
   highest: COLORS.magenta,
@@ -35,7 +36,11 @@ function TooltipBox({ active, payload, suffix = "%" }: any) {
   );
 }
 
-export function ChurnAnalysis() {
+interface ChurnAnalysisProps {
+  result: SimulationResult;
+}
+
+export function ChurnAnalysis({ result }: ChurnAnalysisProps) {
   return (
     <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
       {/* Left — churn by failure type */}
@@ -46,8 +51,8 @@ export function ChurnAnalysis() {
         />
         <div className="h-[220px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={churnByFailure} layout="vertical" margin={{ left: 8, right: 40, top: 0, bottom: 0 }}>
-              <XAxis type="number" hide domain={[0, 70]} />
+            <BarChart data={result.churnByFailure} layout="vertical" margin={{ left: 8, right: 40, top: 0, bottom: 0 }}>
+              <XAxis type="number" hide domain={[0, 100]} />
               <YAxis
                 type="category"
                 dataKey="label"
@@ -65,7 +70,7 @@ export function ChurnAnalysis() {
                 shape={(props: any) => (
                   <Rectangle
                     {...props}
-                    fill={barColor[churnByFailure[props.index]?.level] ?? "#7c8299"}
+                    fill={barColor[result.churnByFailure[props.index]?.level] ?? "#7c8299"}
                     radius={[0, 6, 6, 0]}
                   />
                 )}
@@ -84,8 +89,8 @@ export function ChurnAnalysis() {
         <div className="mt-2 flex items-start gap-2.5 rounded-lg border border-magenta/25 bg-magenta/[0.06] p-3">
           <AlertTriangle className="mt-0.5 size-4 shrink-0 text-magenta" />
           <p className="text-[0.8125rem] leading-snug text-foreground/85">
-            <span className="font-semibold text-magenta">MDR Rejection — 62.8% churn.</span>{" "}
-            Merchant-initiated rejection is the most damaging payment failure.
+            <span className="font-semibold text-magenta">MDR Rejection — {result.churnRate}% churn.</span>{" "}
+            Merchant-initiated rejection is the single most damaging payment failure mode.
           </p>
         </div>
       </Card>
@@ -94,14 +99,14 @@ export function ChurnAnalysis() {
       <Card className="p-6" elevated>
         <SectionHeading
           title="Post-Rejection User Behavior"
-          subtitle="Outcome of the 207 rejected sessions"
+          subtitle={`Outcome of the ${result.mdrCount.toLocaleString()} rejected sessions`}
         />
         <div className="flex items-center gap-6">
           <div className="relative h-[200px] w-[200px] shrink-0">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={postRejection}
+                  data={result.postRejection}
                   dataKey="value"
                   innerRadius={68}
                   outerRadius={92}
@@ -111,7 +116,7 @@ export function ChurnAnalysis() {
                   stroke="none"
                   isAnimationActive={false}
                 >
-                  {postRejection.map((d) => (
+                  {result.postRejection.map((d) => (
                     <Cell key={d.name} fill={d.color} />
                   ))}
                 </Pie>
@@ -120,13 +125,13 @@ export function ChurnAnalysis() {
             </ResponsiveContainer>
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
               <div className="text-[1.75rem] font-bold leading-none text-foreground" style={{ fontVariantNumeric: "tabular-nums" }}>
-                207
+                {result.mdrCount.toLocaleString()}
               </div>
-              <div className="mt-1 text-[0.6875rem] text-muted-foreground">Rejected Sessions</div>
+              <div className="mt-1 text-[0.6875rem] text-muted-foreground">MDR Rejections</div>
             </div>
           </div>
           <div className="flex flex-1 flex-col gap-3">
-            {postRejection.map((d) => (
+            {result.postRejection.map((d) => (
               <div key={d.name} className="flex items-center justify-between rounded-lg border border-border bg-white/[0.02] px-3 py-2.5">
                 <div className="flex items-center gap-2.5">
                   <span className="size-2.5 rounded-full" style={{ backgroundColor: d.color }} />
@@ -134,14 +139,14 @@ export function ChurnAnalysis() {
                 </div>
                 <div className="text-right" style={{ fontVariantNumeric: "tabular-nums" }}>
                   <div className="text-[0.9375rem] font-semibold text-foreground">{d.value}%</div>
-                  <div className="text-[0.6875rem] text-muted-foreground">{d.users} users</div>
+                  <div className="text-[0.6875rem] text-muted-foreground">{d.users.toLocaleString()} users</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
         <p className="mt-4 border-t border-border pt-3 text-[0.8125rem] text-muted-foreground">
-          <span className="font-semibold text-success">77 users</span> successfully
+          <span className="font-semibold text-success">{result.retainedCount.toLocaleString()} users</span> successfully
           switched to Slice Savings.
         </p>
       </Card>

@@ -1,19 +1,24 @@
 import { ArrowRight } from "lucide-react";
 import { Card, SectionHeading } from "./primitives";
-import { statusDistribution } from "./data";
+import { SimulationResult } from "./simulationEngine";
 
-export function StatusDistribution() {
-  const max = Math.max(...statusDistribution.map((s) => s.count));
+interface StatusDistributionProps {
+  result: SimulationResult;
+}
+
+export function StatusDistribution({ result }: StatusDistributionProps) {
+  const max = Math.max(...result.statusDistribution.map((s) => s.count)) || 1;
+
   return (
     <Card className="p-6" elevated>
       <SectionHeading
         title="Transaction Status Distribution"
-        subtitle="Breakdown of all payment outcomes"
+        subtitle={`Breakdown across all ${result.totalTransactions.toLocaleString()} simulated payment outcomes`}
       />
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_300px]">
         {/* Bars */}
         <div className="flex flex-col gap-4">
-          {statusDistribution.map((s) => (
+          {result.statusDistribution.map((s) => (
             <div key={s.key} className="group">
               <div className="mb-1.5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -51,19 +56,18 @@ export function StatusDistribution() {
         {/* Insight panel */}
         <div className="flex flex-col justify-center rounded-xl border border-magenta/25 bg-magenta/[0.06] p-5">
           <div className="text-[2.25rem] font-bold leading-none tracking-tight text-magenta" style={{ fontSize: "2.25rem", fontVariantNumeric: "tabular-nums" }}>
-            12.7%
+            {result.mdrShareOfFailures}%
           </div>
           <p className="mt-2 text-[0.8125rem] leading-snug text-foreground">
-            of all failed transactions are MDR rejections
+            of all failed transactions are MDR rejections ({result.mdrCount.toLocaleString()} txns)
           </p>
           <p className="mt-3 text-[0.75rem] leading-relaxed text-muted-foreground">
-            Unlike technical failures, MDR rejection cannot be solved by retrying
-            with the same payment method.
+            Unlike technical timeouts, MDR rejections are merchant-initiated and cannot be resolved by retrying with the same credit card.
           </p>
-          <button className="mt-4 flex items-center gap-1.5 text-[0.8125rem] font-medium text-primary transition-colors hover:text-magenta">
-            View Analysis
+          <div className="mt-4 flex items-center gap-1.5 text-[0.8125rem] font-medium text-primary">
+            <span>MDR avoidance active</span>
             <ArrowRight className="size-3.5" />
-          </button>
+          </div>
         </div>
       </div>
     </Card>

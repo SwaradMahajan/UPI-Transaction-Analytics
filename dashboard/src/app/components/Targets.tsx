@@ -1,13 +1,20 @@
 import { Target, TrendingDown, TrendingUp } from "lucide-react";
 import { Card } from "./primitives";
+import { SimulationResult } from "./simulationEngine";
 
-export function Targets() {
+interface TargetsProps {
+  result: SimulationResult;
+}
+
+export function Targets({ result }: TargetsProps) {
+  const projectedUplift = Math.max(0, Number((70 - result.retentionRate).toFixed(1)));
+
   return (
     <div>
       <div className="mb-4 flex items-center gap-2">
         <h2 className="tracking-tight">Success Metrics</h2>
         <span className="rounded-full bg-white/[0.06] px-2.5 py-1 text-[0.6875rem] text-muted-foreground">
-          4-Week Post-Launch Targets
+          4-Week Post-Launch Targets vs. Current Simulation
         </span>
       </div>
 
@@ -42,8 +49,10 @@ export function Targets() {
           </div>
           <div className="mt-4 flex items-end justify-between">
             <div>
-              <div className="text-[0.6875rem] text-muted-foreground">Baseline</div>
-              <div className="text-[1.5rem] font-bold text-danger" style={{ fontVariantNumeric: "tabular-nums" }}>62.8%</div>
+              <div className="text-[0.6875rem] text-muted-foreground">Current Sim</div>
+              <div className="text-[1.5rem] font-bold text-danger" style={{ fontVariantNumeric: "tabular-nums" }}>
+                {result.churnRate}%
+              </div>
             </div>
             <TrendingDown className="mb-1 size-5 text-success" />
             <div className="text-right">
@@ -52,8 +61,8 @@ export function Targets() {
             </div>
           </div>
           <div className="mt-4 flex h-2.5 gap-1">
-            <div className="h-full rounded-l-full bg-danger" style={{ width: "62.8%" }} />
-            <div className="h-full rounded-r-full bg-success/40" style={{ width: "37.2%" }} />
+            <div className="h-full rounded-l-full bg-danger" style={{ width: `${result.churnRate}%` }} />
+            <div className="h-full rounded-r-full bg-success/40" style={{ width: `${result.retentionRate}%` }} />
           </div>
         </Card>
 
@@ -65,8 +74,10 @@ export function Targets() {
           </div>
           <div className="mt-4 flex items-end justify-between">
             <div>
-              <div className="text-[0.6875rem] text-muted-foreground">Baseline</div>
-              <div className="text-[1.5rem] font-bold text-foreground" style={{ fontVariantNumeric: "tabular-nums" }}>37.2%</div>
+              <div className="text-[0.6875rem] text-muted-foreground">Current Sim</div>
+              <div className="text-[1.5rem] font-bold text-foreground" style={{ fontVariantNumeric: "tabular-nums" }}>
+                {result.retentionRate}%
+              </div>
             </div>
             <TrendingUp className="mb-1 size-5 text-success" />
             <div className="text-right">
@@ -76,9 +87,11 @@ export function Targets() {
           </div>
           <div className="mt-4">
             <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
-              <div className="h-full rounded-full bg-gradient-to-r from-blue-400 to-success" style={{ width: "70%" }} />
+              <div className="h-full rounded-full bg-gradient-to-r from-blue-400 to-success" style={{ width: `${Math.min(100, (result.retentionRate / 70) * 100)}%` }} />
             </div>
-            <div className="mt-2 text-[0.6875rem] text-success">+32.8pt projected uplift</div>
+            <div className="mt-2 text-[0.6875rem] text-success">
+              {projectedUplift > 0 ? `+${projectedUplift}pt projected uplift` : "Target achieved"}
+            </div>
           </div>
         </Card>
       </div>

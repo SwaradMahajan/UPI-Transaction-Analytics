@@ -1,59 +1,53 @@
 import { Activity, AlertOctagon, CheckCircle2, TrendingDown, TrendingUp } from "lucide-react";
 import { Card, Sparkline } from "./primitives";
-import { COLORS, spark } from "./data";
+import { COLORS } from "./data";
+import { SimulationResult } from "./simulationEngine";
 
-type Kpi = {
-  label: string;
-  value: string;
-  sub: string;
-  subTone: "up" | "down" | "neutral";
-  icon: typeof Activity;
-  accent: string;
-  spark: number[];
-  border?: string;
-};
+interface KpiCardsProps {
+  result: SimulationResult;
+}
 
-const kpis: Kpi[] = [
-  {
-    label: "Total Transactions",
-    value: "10,000",
-    sub: "8.4% vs previous period",
-    subTone: "up",
-    icon: Activity,
-    accent: COLORS.blue,
-    spark: spark.transactions,
-  },
-  {
-    label: "Successful Payments",
-    value: "8,373",
-    sub: "83.73% success rate",
-    subTone: "up",
-    icon: CheckCircle2,
-    accent: COLORS.success,
-    spark: spark.success,
-  },
-  {
-    label: "MDR Rejections",
-    value: "207",
-    sub: "2.07% of total transactions",
-    subTone: "neutral",
-    icon: AlertOctagon,
-    accent: COLORS.warning,
-    spark: spark.mdr,
-  },
-  {
-    label: "5-Minute Churn",
-    value: "62.8%",
-    sub: "130 users abandoned",
-    subTone: "down",
-    icon: TrendingDown,
-    accent: COLORS.danger,
-    spark: spark.churn,
-    border: "border-danger/40",
-  },
-];
+export function KpiCards({ result }: KpiCardsProps) {
+  const kpis = [
+    {
+      label: "Total Transactions",
+      value: result.totalTransactions.toLocaleString(),
+      sub: `${result.params.totalTransactions.toLocaleString()} simulated batch`,
+      subTone: "neutral" as const,
+      icon: Activity,
+      accent: COLORS.blue,
+      spark: result.spark.transactions,
+    },
+    {
+      label: "Successful Payments",
+      value: result.successCount.toLocaleString(),
+      sub: `${result.successRate}% success rate`,
+      subTone: result.successRate >= 80 ? ("up" as const) : ("down" as const),
+      icon: CheckCircle2,
+      accent: COLORS.success,
+      spark: result.spark.success,
+    },
+    {
+      label: "MDR Rejections",
+      value: result.mdrCount.toLocaleString(),
+      sub: `${result.mdrRate}% of total volume`,
+      subTone: "neutral" as const,
+      icon: AlertOctagon,
+      accent: COLORS.warning,
+      spark: result.spark.mdr,
+    },
+    {
+      label: "5-Minute Churn",
+      value: `${result.churnRate}%`,
+      sub: `${result.churnedCount.toLocaleString()} users abandoned`,
+      subTone: result.churnRate > 50 ? ("down" as const) : ("up" as const),
+      icon: TrendingDown,
+      accent: COLORS.danger,
+      spark: result.spark.churn,
+      border: result.churnRate > 50 ? "border-danger/40" : "border-success/40",
+    },
+  ];
 
-export function KpiCards() {
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
       {kpis.map((k) => (

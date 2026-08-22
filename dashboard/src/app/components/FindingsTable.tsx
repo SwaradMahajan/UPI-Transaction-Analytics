@@ -1,6 +1,6 @@
 import { AlertTriangle, CircleDot, Search, Sparkles } from "lucide-react";
 import { Card, SectionHeading } from "./primitives";
-import { Finding, keyFindings } from "./data";
+import { Finding, SimulationResult } from "./simulationEngine";
 
 function StatusBadge({ finding }: { finding: Finding }) {
   const map = {
@@ -19,10 +19,14 @@ function StatusBadge({ finding }: { finding: Finding }) {
   );
 }
 
-export function FindingsTable() {
+interface FindingsTableProps {
+  result: SimulationResult;
+}
+
+export function FindingsTable({ result }: FindingsTableProps) {
   return (
     <Card className="p-6" elevated>
-      <SectionHeading title="Key Findings" subtitle="Prioritized signals for the Product & Data teams" />
+      <SectionHeading title="Key Findings" subtitle="Prioritized signals for the Product & Data teams from the active simulation run" />
       <div className="overflow-hidden rounded-xl border border-border">
         <table className="w-full border-collapse text-left">
           <thead>
@@ -34,11 +38,11 @@ export function FindingsTable() {
             </tr>
           </thead>
           <tbody>
-            {keyFindings.map((f, i) => (
+            {result.keyFindings.map((f, i) => (
               <tr
                 key={f.insight}
                 className={`text-[0.875rem] transition-colors hover:bg-white/[0.02] ${
-                  i !== keyFindings.length - 1 ? "border-b border-border" : ""
+                  i !== result.keyFindings.length - 1 ? "border-b border-border" : ""
                 }`}
               >
                 <td className="px-4 py-3.5 font-medium text-foreground">{f.insight}</td>

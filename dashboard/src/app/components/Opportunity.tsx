@@ -1,5 +1,6 @@
 import { ArrowRight, CreditCard, Sparkles, Wallet } from "lucide-react";
 import { SectionHeading } from "./primitives";
+import { SimulationResult } from "./simulationEngine";
 
 function FlowStep({
   label,
@@ -25,7 +26,11 @@ function Arrow() {
   return <ArrowRight className="mx-auto size-4 shrink-0 rotate-90 text-muted-foreground md:rotate-0" />;
 }
 
-export function Opportunity() {
+interface OpportunityProps {
+  result: SimulationResult;
+}
+
+export function Opportunity({ result }: OpportunityProps) {
   return (
     <section className="relative overflow-hidden rounded-2xl border border-primary/25 p-6 md:p-8">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/[0.12] via-magenta/[0.05] to-transparent" />
@@ -57,7 +62,7 @@ export function Opportunity() {
                 <div className="md:px-2"><Arrow /></div>
                 <div className="flex-1"><FlowStep label="Generic Transaction Failed Screen" tone="danger" /></div>
                 <div className="md:px-2"><Arrow /></div>
-                <div className="flex-1"><FlowStep label="62.8% User Churn" tone="danger" /></div>
+                <div className="flex-1"><FlowStep label={`${result.churnRate}% User Churn`} tone="danger" /></div>
               </div>
             </div>
 
@@ -75,7 +80,7 @@ export function Opportunity() {
                 <div className="md:px-2"><Arrow /></div>
                 <div className="flex-1"><FlowStep label="Pay via Slice Savings" tone="purple" /></div>
                 <div className="md:px-2"><Arrow /></div>
-                <div className="flex-1"><FlowStep label="Higher Session Completion" tone="success" /></div>
+                <div className="flex-1"><FlowStep label="≥ 70% Session Retention" tone="success" /></div>
               </div>
             </div>
           </div>
