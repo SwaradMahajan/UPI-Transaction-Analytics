@@ -11,9 +11,9 @@ export function Card({
 }) {
   return (
     <div
-      className={`rounded-2xl border border-border ${
-        elevated ? "bg-card-elevated" : "bg-card"
-      } shadow-[0_1px_0_0_rgba(255,255,255,0.03)_inset,0_20px_40px_-24px_rgba(0,0,0,0.6)] ${className}`}
+      className={`rounded-[1.15rem] border border-white/70 ${
+        elevated ? "bg-[#fbf9f5]/85" : "bg-[#fbf9f5]/70"
+      } backdrop-blur-xl shadow-[0_2px_4px_rgba(74,60,55,0.08),0_22px_48px_-26px_rgba(74,60,55,0.28),inset_0_1px_0_rgba(255,255,255,0.7)] ${className}`}
     >
       {children}
     </div>
@@ -35,7 +35,6 @@ export const DOT_GLYPHS: Record<string, string[]> = {
   "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"],
   "9": ["01110", "10001", "10001", "01111", "00001", "00001", "01110"],
   ".": ["0", "0", "0", "0", "0", "0", "1"],
-  "%": ["11001", "11010", "00100", "01000", "01011", "10011", "00000"],
 };
 
 export function DotNumber({
@@ -162,7 +161,7 @@ export function Pill({
     danger: "bg-danger/12 text-danger",
     warning: "bg-warning/12 text-warning",
     purple: "bg-primary/15 text-primary",
-    muted: "bg-white/[0.06] text-muted-foreground",
+    muted: "bg-black/[0.05] text-muted-foreground",
   };
   return (
     <span

@@ -1,14 +1,14 @@
-// Shared realistic dashboard data for UPI Analytics — Payment Insights & Metrics
+// Shared realistic dashboard data for Analytics — UPI Payment Insights
 
 export const COLORS = {
-  primary: "#a855f7", // vibrant purple
-  magenta: "#ec4899",
-  blue: "#60a5fa",
-  success: "#22c99a",
-  warning: "#f5a524",
-  danger: "#f0476a",
-  muted: "#8b8ea3",
-  grid: "rgba(255,255,255,0.06)",
+  primary: "#b3607a",
+  magenta: "#c483a6",
+  blue: "#8f9dc4",
+  success: "#6aa588",
+  warning: "#d99a5b",
+  danger: "#d4726e",
+  muted: "#857d76",
+  grid: "rgba(58,53,50,0.06)",
 };
 
 export const navItems = [

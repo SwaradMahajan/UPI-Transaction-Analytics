@@ -37,7 +37,7 @@ export function Header({ activeSection = "dashboard-overview", onNavigate }: Hea
           onClick={() => handleNavClick("dashboard-overview")}
           className="flex items-center gap-3 text-left transition-opacity hover:opacity-90 cursor-pointer"
         >
-          <div className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-primary to-magenta shadow-[0_6px_16px_-4px_rgba(168,85,247,0.6)]">
+          <div className="grid size-9 place-items-center rounded-xl bg-primary">
             <Zap className="size-4.5 text-white" strokeWidth={2.5} />
           </div>
           <div className="leading-none">
@@ -45,7 +45,7 @@ export function Header({ activeSection = "dashboard-overview", onNavigate }: Hea
               UPI ANALYTICS
             </div>
             <div className="mt-1 text-[0.625rem] tracking-[0.18em] text-muted-foreground">
-              PAYMENT INSIGHTS & METRICS
+              UPI PAYMENT INSIGHTS
             </div>
           </div>
         </button>
@@ -66,7 +66,7 @@ export function Header({ activeSection = "dashboard-overview", onNavigate }: Hea
               >
                 {item.label}
                 {isActive && (
-                  <span className="absolute inset-x-3 -bottom-[21px] h-0.5 rounded-full bg-primary shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
+                  <span className="absolute inset-x-3 -bottom-[21px] h-0.5 rounded-full bg-primary" />
                 )}
               </button>
             );
@@ -77,7 +77,7 @@ export function Header({ activeSection = "dashboard-overview", onNavigate }: Hea
         <div className="ml-auto flex items-center gap-2">
           <button
             onClick={() => handleNavClick("transaction-analysis")}
-            className="hidden sm:flex items-center gap-2 rounded-lg border border-border bg-input px-3 py-2 text-[0.8125rem] text-foreground transition-colors hover:bg-white/[0.06] cursor-pointer"
+            className="hidden sm:flex items-center gap-2 rounded-lg border border-border bg-input px-3 py-2 text-[0.8125rem] text-foreground transition-colors hover:bg-black/[0.04] cursor-pointer"
           >
             <Calendar className="size-3.5 text-muted-foreground" />
             Last 30 Days
@@ -92,13 +92,13 @@ export function Header({ activeSection = "dashboard-overview", onNavigate }: Hea
           </button>
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 rounded-lg bg-primary px-3.5 py-2 text-[0.8125rem] font-medium text-primary-foreground transition-colors hover:bg-primary/90 cursor-pointer shadow-[0_4px_12px_rgba(168,85,247,0.3)]"
+            className="flex items-center gap-2 rounded-lg bg-primary px-3.5 py-2 text-[0.8125rem] font-medium text-primary-foreground transition-colors hover:bg-primary/90 cursor-pointer"
           >
             <Download className="size-3.5" />
             Export
           </button>
-          <div className="ml-1 grid size-9 place-items-center rounded-full bg-gradient-to-br from-blue-400 to-primary text-[0.75rem] font-semibold text-white">
-            UA
+          <div className="ml-1 grid size-9 place-items-center rounded-full bg-primary/12 text-[0.75rem] font-semibold text-primary">
+            AK
           </div>
         </div>
       </div>

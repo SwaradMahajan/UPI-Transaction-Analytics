@@ -9,7 +9,7 @@ export function Hero({ result }: HeroProps) {
   return (
     <section className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[1fr_360px]">
       <div className="flex flex-col justify-center">
-        <div className="mb-3 inline-flex w-fit items-center gap-2 rounded-full border border-border bg-white/[0.03] px-3 py-1 text-[0.6875rem] tracking-wide text-muted-foreground">
+        <div className="mb-3 inline-flex w-fit items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-[0.6875rem] tracking-wide text-muted-foreground">
           <span className="size-1.5 rounded-full bg-success animate-pulse" />
           Live Simulation · Seed #{result.seed} · {result.totalTransactions.toLocaleString()} txns
         </div>
@@ -23,8 +23,7 @@ export function Hero({ result }: HeroProps) {
       </div>
 
       {/* Critical insight card */}
-      <div className="relative overflow-hidden rounded-2xl border border-danger/30 bg-gradient-to-br from-danger/[0.14] to-magenta/[0.06] p-6">
-        <div className="pointer-events-none absolute -right-8 -top-8 size-32 rounded-full bg-danger/20 blur-2xl" />
+      <div className="rounded-[1.15rem] border border-danger/25 bg-danger/[0.08] p-6 backdrop-blur-xl shadow-[0_2px_4px_rgba(50,28,39,0.08),0_22px_48px_-26px_rgba(160,40,50,0.35)]">
         <div className="flex items-center gap-2">
           <div className="grid size-8 place-items-center rounded-lg bg-danger/20 text-danger">
             <AlertTriangle className="size-4" />
@@ -39,7 +38,7 @@ export function Hero({ result }: HeroProps) {
         <p className="mt-2 text-[0.8125rem] leading-snug text-foreground/80">
           Users ({result.churnedCount.toLocaleString()} out of {result.mdrCount.toLocaleString()}) abandon within 5 minutes after an MDR rejection.
         </p>
-        <p className="mt-3 border-t border-white/10 pt-3 text-[0.75rem] leading-snug text-muted-foreground">
+        <p className="mt-3 border-t border-danger/20 pt-3 text-[0.75rem] leading-snug text-muted-foreground">
           Merchant-initiated failures have the highest downstream churn impact ({result.mdrShareOfFailures}% of total failures).
         </p>
       </div>
