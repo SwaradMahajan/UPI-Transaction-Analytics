@@ -20,6 +20,74 @@ export function Card({
   );
 }
 
+/* ============================================================
+   LED-DOT NUMERALS — v11 signature type for hero metrics
+   ============================================================ */
+export const DOT_GLYPHS: Record<string, string[]> = {
+  "0": ["01110", "10001", "10011", "10101", "11001", "10001", "01110"],
+  "1": ["010", "110", "010", "010", "010", "010", "111"],
+  "2": ["01110", "10001", "00001", "00010", "00100", "01000", "11111"],
+  "3": ["11110", "00001", "00001", "01110", "00001", "00001", "11110"],
+  "4": ["00010", "00110", "01010", "10010", "11111", "00010", "00010"],
+  "5": ["11111", "10000", "10000", "11110", "00001", "00001", "11110"],
+  "6": ["01110", "10000", "10000", "11110", "10001", "10001", "01110"],
+  "7": ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
+  "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"],
+  "9": ["01110", "10001", "10001", "01111", "00001", "00001", "01110"],
+  ".": ["0", "0", "0", "0", "0", "0", "1"],
+  "%": ["11001", "11010", "00100", "01000", "01011", "10011", "00000"],
+};
+
+export function DotNumber({
+  value,
+  unit,
+  color,
+  className = "",
+}: {
+  value: string;
+  unit?: string;
+  color?: string;
+  className?: string;
+}) {
+  const pitchX = 5;
+  const pitchY = 4;
+  const gap = 1;
+  const r = 1.7;
+  const circles: { cx: number; cy: number }[] = [];
+  let x = 0;
+  for (const ch of value) {
+    const g = DOT_GLYPHS[ch];
+    if (!g) {
+      x += (2 + gap) * pitchX;
+      continue;
+    }
+    const cols = g[0].length;
+    g.forEach((row, ri) =>
+      [...row].forEach((bit, ci) => {
+        if (bit === "1") circles.push({ cx: x + ci * pitchX + 1.55, cy: ri * pitchY + 1.55 });
+      })
+    );
+    x += (cols + gap) * pitchX;
+  }
+  const width = Math.max(x - gap * pitchX, 1);
+  return (
+    <span className={`inline-flex items-end gap-2 ${className}`} style={{ color: color ?? "var(--foreground)" }}>
+      <svg
+        viewBox={`0 0 ${width} 28`}
+        fill="currentColor"
+        className="block h-[1em] w-auto overflow-visible"
+        preserveAspectRatio="xMidYMid meet"
+        aria-label={value}
+      >
+        {circles.map((c, i) => (
+          <circle key={i} cx={c.cx} cy={c.cy} r={r} />
+        ))}
+      </svg>
+      {unit && <span className="text-[0.44em] font-medium leading-none translate-y-[-0.12em]">{unit}</span>}
+    </span>
+  );
+}
+
 export function SectionHeading({
   title,
   subtitle,
